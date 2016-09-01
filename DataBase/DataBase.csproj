@@ -37,6 +37,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\Npgsql.dll</HintPath>
     </Reference>
+    <Reference Include="Oracle.ManagedDataAccess, Version=4.121.1.0, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Oracle.ManagedDataAccess.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Forms" />
@@ -60,6 +64,10 @@
     <Compile Include="common\objects\Sort.cs" />
     <Compile Include="common\TableEntity.cs" />
     <Compile Include="common\TableEntityPage.cs" />
+    <Compile Include="mssqlserver\ConnectionInfo.cs" />
+    <Compile Include="mssqlserver\DatabaseAccessor.cs" />
+    <Compile Include="oracle\ConnectionInfo.cs" />
+    <Compile Include="oracle\DatabaseAccessor.cs" />
     <Compile Include="postgresql\ConnectionInfo.cs" />
     <Compile Include="postgresql\DatabaseAccessor.cs" />
     <Compile Include="postgresql\EntityPage.cs" />
