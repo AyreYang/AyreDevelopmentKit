@@ -111,13 +111,14 @@ namespace DataBase.common
         {
             if (accessor != null) this.accessor = accessor;
         }
-        internal int SetEntity(DataRow row)
+        internal int SetEntity(DataRow row, long time = 0)
         {
             if (row == null) return 0;
 
             foreach (DBColumn column in Columns.Values) column.Fresh(row);
             foreach (string key in Foreigns.Keys) Foreigns[key].Fresh(accessor);
             SetEntityState();
+            FreshTimeTicks = time;
             return 1;
         }
         internal List<DbCommand> GetInsertCommands(DatabaseCore accessor = null)
@@ -254,8 +255,7 @@ namespace DataBase.common
             if (string.IsNullOrWhiteSpace(sql) || parameters == null) return 0;
             var data = accessor.Retrieve(accessor.CreateCommand(sql, parameters));
             if (data == null || data.Rows.Count <= 0) return 0;
-            FreshTimeTicks = DateTime.Now.Ticks;
-            return SetEntity(data.Rows[0]);
+            return SetEntity(data.Rows[0], DateTime.Now.Ticks);
         }
         public long Save()
         {
@@ -392,7 +392,8 @@ namespace DataBase.common
         #region Private Methods
         private void InitialColumns()
         {
-            foreach (PropertyInfo proInfo in this.GetType().GetProperties())
+            var properties = this.GetType().GetProperties();
+            foreach (PropertyInfo proInfo in properties)
             {
                 var attrs = proInfo.GetCustomAttributes(typeof(DBFieldAttribute), true);
                 var attr = (attrs != null && attrs.Length > 0) ? (DBFieldAttribute)attrs[0] : null;
@@ -405,7 +406,8 @@ namespace DataBase.common
         }
         private void InitialForeigns()
         {
-            foreach (PropertyInfo proInfo in this.GetType().GetProperties())
+            var properties = this.GetType().GetProperties();
+            foreach (PropertyInfo proInfo in properties)
             {
                 var attrs = proInfo.GetCustomAttributes(typeof(DBForeignAttribute), true);
                 var attr = (attrs != null && attrs.Length > 0) ? (DBForeignAttribute)attrs[0] : null;

@@ -9,7 +9,8 @@ namespace DataBase.common.interfaces
     public interface IDatabase : IDisposable
     {
         DataTable Retrieve(DbCommand command);
-        List<T> Retrieve<T>(Clause clause, Sort sort) where T : TableEntity, new();
+        List<T> Retrieve<T>(DbCommand command, bool ignoreCase = true) where T : new();
+        List<T> RetrieveEntity<T>(Clause clause, Sort sort) where T : TableEntity, new();
         T RetrieveValue<T>(DbCommand command, T def = default(T));
             //where T : struct;
         long ExecuteSQLCommand(DbCommand command);

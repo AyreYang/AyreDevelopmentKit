@@ -126,7 +126,8 @@ namespace DataBase.common.objects
         {
             if (State < ColumnState.RAW) return;
             if (adr_row == null || adr_row.Table.Columns == null || !adr_row.Table.Columns.Contains(ID)) return;
-            object value = DatabaseCore.GetValueFormDataRow<object>(adr_row, this.ID);
+            //object value = DatabaseCore.GetValueFormDataRow<object>(adr_row, this.ID);
+            object value = adr_row[this.ID];
             Reset();
             if (SetValue(value))
             {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 using System.Text;
 using DataBase.common.interfaces;
 using DataBase.common.objects;
@@ -170,34 +171,52 @@ namespace DataBase.common
                 if (msc_con != null) msc_con.Close();
             }
         }
-        public List<T> Retrieve<T>(DbCommand command) where T : TableEntity, new()
+        public List<T> Retrieve<T>(DbCommand command, bool ignoreCase = true) where T : new()
         {
-            var result = new List<T>();
-            var data = Retrieve(command);
-            if (data != null && data.Rows.Count > 0)
-                foreach (DataRow row in data.Rows)
+            List<T> result = new List<T>();
+            DataTable data = null;
+            if (command != null && (data = Retrieve(command)) != null && data.Rows.Count > 0)
+            {
+                var dict = new Dictionary<string, System.Reflection.PropertyInfo>();
+                var properties = (typeof(T)).GetProperties();
+                foreach (DataColumn col in data.Columns)
                 {
-                    var ent = new T();
-                    ent.SetDBAccessor(this);
-                    ent.SetEntity(row);
-                    ent.Fresh();
-                    result.Add(ent);
+                    var name = ignoreCase ? col.ColumnName.Trim().ToUpper() : col.ColumnName;
+                    var info = ignoreCase ? properties.FirstOrDefault(p => p.Name.Trim().ToUpper().Equals(name)) : properties.FirstOrDefault(p => p.Name.Equals(name));
+                    if (info != null) dict.Add(col.ColumnName, info);
                 }
+                if (dict.Count > 0)
+                {
+                    foreach (DataRow row in data.Rows)
+                    {
+                        var ent = new T();
+                        dict.Keys.ToList().ForEach(key =>
+                        {
+                            dict[key].SetValue(ent, row[key], null);
+                        });
+                        result.Add(ent);
+                    }
+                }
+            }
             return result;
         }
-        public List<T> Retrieve<T>() where T : TableEntity, new()
+        public List<T> RetrieveEntity<T>(DbCommand command) where T : TableEntity, new()
         {
-            return Retrieve<T>(null, null);
+            return RetrieveEntity<T>(command, true);
         }
-        public List<T> Retrieve<T>(Clause clause) where T : TableEntity, new()
+        public List<T> RetrieveEntity<T>() where T : TableEntity, new()
         {
-            return Retrieve<T>(clause, null);
+            return RetrieveEntity<T>(null, null);
         }
-        public List<T> Retrieve<T>(Sort sort) where T : TableEntity, new()
+        public List<T> RetrieveEntity<T>(Clause clause) where T : TableEntity, new()
         {
-            return Retrieve<T>(null, sort);
+            return RetrieveEntity<T>(clause, null);
         }
-        public List<T> Retrieve<T>(Clause clause, Sort sort) where T : TableEntity, new()
+        public List<T> RetrieveEntity<T>(Sort sort) where T : TableEntity, new()
+        {
+            return RetrieveEntity<T>(null, sort);
+        }
+        public List<T> RetrieveEntity<T>(Clause clause, Sort sort) where T : TableEntity, new()
         {
             var sql = new StringBuilder();
             var entity = new T();
@@ -213,7 +232,7 @@ namespace DataBase.common
             if (!string.IsNullOrWhiteSpace(txtSort)) sql.AppendLine(" ORDER BY " + txtSort);
 
             var command = CreateCommand(sql.ToString(), parameters);
-            return Retrieve<T>(command);
+            return RetrieveEntity<T>(command, false);
         }
         public T RetrieveValue<T>(DbCommand command, T def = default(T))
             //where T : struct
@@ -404,6 +423,31 @@ namespace DataBase.common
             {
                 mc_commands.AddRange(commands);
             }
+        }
+        internal List<T> RetrieveEntity<T>(DbCommand command, bool needfresh) where T : TableEntity, new()
+        {
+            var result = new List<T>();
+            var data = Retrieve(command);
+            if (data != null && data.Rows.Count > 0)
+            {
+                var ticks = DateTime.Now.Ticks;
+                foreach (DataRow row in data.Rows)
+                {
+                    var ent = new T();
+                    ent.SetDBAccessor(this);
+                    if (needfresh)
+                    {
+                        ent.SetEntity(row);
+                        ent.Fresh();
+                    }
+                    else
+                    {
+                        ent.SetEntity(row, ticks);
+                    }
+                    result.Add(ent);
+                }
+            }
+            return result;
         }
         #endregion
 

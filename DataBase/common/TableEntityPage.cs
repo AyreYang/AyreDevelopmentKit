@@ -36,7 +36,7 @@ namespace DataBase.common
             if (Sort.Count <= 0) return list;
             if (string.IsNullOrWhiteSpace(PageNOScript)) return list;
             string select = string.Empty;
-            using (var entity = CreateEntity())
+            using (var entity = TableEntity.CreateEntity<T>())
             {
                 select = (entity != null) ? entity.SQLTableSelect : null;
             }
@@ -53,20 +53,20 @@ namespace DataBase.common
             Sort.Export(out sort);
             if (!string.IsNullOrWhiteSpace(sort)) sql = string.Format("{0} ORDER BY {1}", sql, sort);
 
-            list = Accessor.Retrieve<T>(Accessor.CreateCommand(sql, parameters));
+            list = Accessor.RetrieveEntity<T>(Accessor.CreateCommand(sql, parameters), false);
             return list;
         }
 
-        private T CreateEntity()
-        {
-            T entity = default(T);
-            try
-            {
-                entity = typeof(T).Assembly.CreateInstance(typeof(T).ToString()) as T;
-            }
-            catch { }
-            return entity;
-        }
+        //private T CreateEntity()
+        //{
+        //    T entity = default(T);
+        //    try
+        //    {
+        //        entity = typeof(T).Assembly.CreateInstance(typeof(T).ToString()) as T;
+        //    }
+        //    catch { }
+        //    return entity;
+        //}
 
         public void Dispose()
         {
