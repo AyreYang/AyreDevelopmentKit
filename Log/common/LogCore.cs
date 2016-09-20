@@ -10,10 +10,35 @@ namespace Log.common
 {
     public abstract class LogCore : ILog
     {
+        public static MODE Mode = MODE.RELEASE;
+
         private const string date = "yyyy-MM-dd";
         private const string pattern = "{0} {1}[{2}]:{3}";  // 0:time, 1:id, 2:type, 3:msg
 
-        public abstract long Write(TYPE type, string message);
+        protected abstract long WriteMsg(TYPE type, string message);
+
+        public long Write(TYPE type, string message)
+        {
+            var flag = false;
+            switch (Mode)
+            {
+                case MODE.DEBUG:
+                    flag = true;
+                    break;
+                case MODE.RELEASE:
+                    switch (type)
+                    {
+                        case TYPE.WARNING:
+                        case TYPE.ERROR:
+                        case TYPE.PROMPT:
+                            flag = true;
+                            break;
+                    }
+                    break;
+            }
+            return flag ? WriteMsg(type, message) : 0;
+        }
+        
         public long Write(Exception exception)
         {
             if (exception == null) return 0;

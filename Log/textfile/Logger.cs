@@ -57,7 +57,7 @@ namespace Log.textfile
             if (ldi_info == null || !ldi_info.Exists) throw new Exception(string.Format(Message.MSG_ERR_PARM_IS_INVALID, "location", location));
             path = ldi_info.FullName;
         }
-        public override long Write(TYPE type, string message)
+        protected override long WriteMsg(TYPE type, string message)
         {
             try
             {

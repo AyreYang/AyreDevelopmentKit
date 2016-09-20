@@ -5,6 +5,11 @@ using System.Text;
 
 namespace Log.common.enums
 {
+    public enum MODE
+    {
+        DEBUG, RELEASE
+    }
+
     public enum TYPE
     {
         INFO = 1,
