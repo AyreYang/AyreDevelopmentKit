@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="consts\Consts.cs" />
     <Compile Include="enums\FilterListType.cs" />
     <Compile Include="enums\MappingMode.cs" />
     <Compile Include="enums\MemberType.cs" />

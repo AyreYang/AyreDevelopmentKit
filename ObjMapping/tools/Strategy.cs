@@ -1,4 +1,5 @@
 ﻿#define DEBUG
+using ObjMapping.consts;
 using ObjMapping.enums;
 using ObjMapping.interfaces;
 using System;
@@ -16,7 +17,11 @@ namespace ObjMapping.tools
         public Guid Key { get { return key; } }
         public static bool IsValidType
         {
-            get { return (typeof(T1).IsClass && !typeof(T1).IsGenericType && !typeof(T1).IsArray) && (typeof(T2).IsClass && !typeof(T2).IsGenericType && !typeof(T2).IsArray); }
+            get
+            {
+                return (Consts.Convert2MemberType(typeof(T1)) == MemberType.Complex && Consts.Convert2MemberType(typeof(T2)) == MemberType.Complex);
+                //return (typeof(T1).IsClass && !typeof(T1).IsGenericType && !typeof(T1).IsArray) && (typeof(T2).IsClass && !typeof(T2).IsGenericType && !typeof(T2).IsArray);
+            }
         }
 
         private MappingMode mode { get; set; }
