@@ -1,11 +1,15 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataBase", "DataBase\DataBase.csproj", "{F32BE11C-E255-415E-9364-6A9A4355AA36}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Log", "Log\Log.csproj", "{32308A53-2512-4D77-9A61-D5B4DC1394C6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Task", "Task\Task.csproj", "{0E010BBF-EDA4-4A49-8ABD-6CD6CEFCF0A1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjMapping", "ObjMapping\ObjMapping.csproj", "{6F1B963C-94BE-4879-8B4C-6C96F6B315AD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,6 +29,10 @@ Global
 		{0E010BBF-EDA4-4A49-8ABD-6CD6CEFCF0A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E010BBF-EDA4-4A49-8ABD-6CD6CEFCF0A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E010BBF-EDA4-4A49-8ABD-6CD6CEFCF0A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F1B963C-94BE-4879-8B4C-6C96F6B315AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F1B963C-94BE-4879-8B4C-6C96F6B315AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F1B963C-94BE-4879-8B4C-6C96F6B315AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F1B963C-94BE-4879-8B4C-6C96F6B315AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
