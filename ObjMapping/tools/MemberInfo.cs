@@ -1,16 +1,12 @@
-﻿using ObjMapping.consts;
-using ObjMapping.enums;
+﻿using ObjMapping.Enums;
 using System;
 using System.Linq;
 
-namespace ObjMapping.tools
+namespace ObjMapping.Tools
 {
-    internal class MemberInfo<T>
-        where T:new()
+    internal class MemberInfo
     {
         public string Name { get { return info.Name; } }
-        public Type TYPE { get { return typeof(T); } }
-        //public System.Reflection.MemberTypes MemberType { get { return info.MemberType; } }
         public object Value
         {
             get
@@ -34,37 +30,43 @@ namespace ObjMapping.tools
                         type = property.PropertyType;
                         break;
                 }
-                return Consts.Convert2MemberType(type);
+                return Consts.Consts.Convert2MemberType(type);
             }
         }
 
         private System.Reflection.MemberInfo info { get; set; }
-        private T Inst { get; set; }
 
-        
+        public object Inst { get; private set; }
 
-        public MemberInfo(System.Reflection.MemberInfo info, T obj = default(T))
+
+
+        public static MemberInfo Create(string name, object obj)
         {
-            if (info == null) throw new NullReferenceException();
-            //if(!TYPE.Equals(info.DeclaringType)) throw new InvalidCastException();
-            switch (info.MemberType)
+            MemberInfo info = null;
+            var type = obj.GetType();
+            var members = type.GetMember(name);
+            if (members != null && members.Length > 0)
             {
-                case System.Reflection.MemberTypes.Field:
-                    this.info = TYPE.GetField(info.Name);
-                    break;
-                case System.Reflection.MemberTypes.Property:
-                    this.info = TYPE.GetProperty(info.Name);
-                    break;
-                default:
-                    throw new InvalidCastException();
+                var member = members.First();
+                switch (member.MemberType)
+                {
+                    case System.Reflection.MemberTypes.Field:
+                        member = type.GetField(name);
+                        break;
+                    case System.Reflection.MemberTypes.Property:
+                        member = type.GetProperty(name);
+                        break;
+                    default:
+                        throw new InvalidCastException();
+                }
+                info = new MemberInfo(member, obj);
             }
-            if (this.info == null) throw new NullReferenceException();
-
-            Inst = obj;
+            return info;
         }
 
-        internal void Reset(T obj = default(T))
+        private MemberInfo(System.Reflection.MemberInfo info, object obj)
         {
+            this.info = info;
             Inst = obj;
         }
         public void SetValue(object value)
@@ -94,22 +96,6 @@ namespace ObjMapping.tools
                     break;
             }
             return value;
-        }
-
-        public override bool Equals(object obj)
-        {
-            var info = obj as MemberInfo<T>;
-
-            return info != null ? Name.Equals(info.Name) : false;
-        }
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
-        public MemberInfo<T> Clone()
-        {
-            return new MemberInfo<T>(this.info);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace ObjMapping.enums
+﻿namespace ObjMapping.Enums
 {
     internal enum MemberType
     {

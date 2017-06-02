@@ -1,7 +1,7 @@
-﻿using ObjMapping.enums;
+﻿using ObjMapping.Enums;
 using System.Collections.Generic;
 
-namespace ObjMapping.tools
+namespace ObjMapping.Tools
 {
     internal class FilterList
     {
@@ -17,11 +17,10 @@ namespace ObjMapping.tools
             List = new List<string>();
         }
 
-        public void Add<T>(params MemberInfo<T>[] members)
-            where T:new()
+        public void Add(params string[] members)
         {
             if (members == null || members.Length <= 0) return;
-            foreach(var info in members) if(!List.Contains(info.Name)) List.Add(info.Name);
+            foreach (var member in members) if (!List.Contains(member)) List.Add(member);
         }
 
         public void Clear()
@@ -29,10 +28,9 @@ namespace ObjMapping.tools
             List.Clear();
         }
 
-        public bool Contains<T>(MemberInfo<T> member)
-            where T : new()
+        public bool Contains(string member)
         {
-            return List.Contains(member.Name);
+            return List.Contains(member);
         }
 
         public List<string> GetList()
