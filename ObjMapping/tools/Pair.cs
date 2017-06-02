@@ -23,6 +23,13 @@ namespace ObjMapping.Tools
             FConverter = converter;
         }
 
+        private Pair(Pair pair)
+        {
+            this.Member1 = pair.Member1;
+            this.Member2 = pair.Member2;
+            this.FConverter = pair.FConverter;
+        }
+
         public void Mapping(object obj1, object obj2)
         {
             try
@@ -39,6 +46,10 @@ namespace ObjMapping.Tools
                 }
             }
             catch { }
+        }
+        public Pair Clone()
+        {
+            return new Pair(this);
         }
     }
 }

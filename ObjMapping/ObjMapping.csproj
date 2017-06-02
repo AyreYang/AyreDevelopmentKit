@@ -55,6 +55,8 @@
     <Compile Include="Tools\MemberInfo.cs" />
     <Compile Include="Tools\Pair.cs" />
     <Compile Include="Tools\Strategy.cs" />
+    <Compile Include="Tools\StrategyContainer.cs" />
+    <Compile Include="Tools\TypePair.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

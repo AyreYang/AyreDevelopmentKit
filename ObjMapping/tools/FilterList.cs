@@ -16,6 +16,12 @@ namespace ObjMapping.Tools
             TYPE = type;
             List = new List<string>();
         }
+        private FilterList(FilterList list)
+        {
+            this.TYPE = list.TYPE;
+            this.List = new List<string>();
+            list.List.ForEach(item => this.List.Add(item));
+        }
 
         public void Add(params string[] members)
         {
@@ -38,6 +44,11 @@ namespace ObjMapping.Tools
             var list = new List<string>();
             List.ForEach(nm => list.Add(nm));
             return list;
+        }
+
+        public FilterList Clone()
+        {
+            return new FilterList(this);
         }
     }
 }

@@ -21,17 +21,21 @@ namespace ObjMapping.Tools
 
         public Strategy(MappingMode mode = MappingMode.All)
         {
-            key = Guid.NewGuid();
+            this.key = Guid.NewGuid();
             this.mode = mode;
             MappingList = new List<Pair>();
             FilterList = null;
         }
 
-
-
-        public static bool IsValidType(object obj1, object obj2)
+        private Strategy(Strategy strategy)
         {
-            return (obj1 != null && Consts.Consts.Convert2MemberType (obj1.GetType()) == MemberType.Complex && obj2 != null && Consts.Consts.Convert2MemberType(obj2.GetType()) == MemberType.Complex);
+            this.key = strategy.Key;
+            this.mode = strategy.Mode;
+            this.FilterList = null;
+            this.MappingList = new List<Pair>();
+
+            if (strategy.FilterList != null) this.FilterList = strategy.FilterList.Clone();
+            strategy.MappingList.ForEach(pair => this.MappingList.Add(pair.Clone()));
         }
 
         #region INTERFACE METHODS
@@ -127,14 +131,14 @@ namespace ObjMapping.Tools
 
 
 
-        internal void Mapping(object obj1, object obj2)
+        public void Mapping(object obj1, object obj2)
 
         {
-
             GetMappingList(obj1, obj2).ForEach(pair => pair.Mapping(obj1, obj2));
-
-
-
+        }
+        public Strategy Clone()
+        {
+            return new Strategy(this);
         }
 
         private List<Pair> GetMappingList(object obj1, object obj2)

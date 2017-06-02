@@ -2,67 +2,60 @@
 using ObjMapping.Interfaces;
 using ObjMapping.Tools;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace ObjMapping
 {
     public static class OBMP
     {
-        private static Dictionary<Guid, IStrategy> strategies = new Dictionary<Guid, IStrategy>();
+        public static Guid K_MODE_ALL_CAREALL = CreateSTRG(MappingMode.All).CareAll().Key;
+        public static Guid K_MODE_SELF_CAREALL = CreateSTRG(MappingMode.Self).CareAll().Key;
 
+        public static IStrategy CreateSTRG<T1, T2>(MappingMode mode = MappingMode.All)
+        {
+            var strategy = new Strategy(mode);
+            StrategyContainer.Inst.Add<T1, T2>(strategy);
+            return strategy;
+        }
         public static IStrategy CreateSTRG(MappingMode mode = MappingMode.All)
         {
             var strategy = new Strategy(mode);
-            strategies.Add(strategy.Key, strategy);
+            StrategyContainer.Inst.Add(strategy);
             return strategy;
         }
 
-        public static T MapTo<T>(this object src, IStrategy strategy = null)
+        public static T MapTo<T>(this object src, Guid? key = null, bool auto = true, bool @default = true)
             where T : new()
         {
-            var dest = new T();
-            Map(src, dest, strategy);
+            var dest = default(T);
+            var strategy = key.HasValue ? 
+                StrategyContainer.Inst.Get(key.Value) : 
+                (auto ? StrategyContainer.Inst.Get(src.GetType(), typeof(T)) :
+                    @default ? StrategyContainer.Inst.Get(K_MODE_ALL_CAREALL) : null);
+            if (strategy != null) Map(src, (dest = new T()), strategy);
             return dest;
         }
 
-        public static T MapTo<T>(this object src, Guid? key, bool auto = true, bool @default = true)
-            where T : new()
-        {
-            var dest = new T();
-            var strategy = SearchStrategy(key, auto, @default);
-            if (strategy != null) Map(src, dest, strategy);
-            return dest;
-        }
-
-        public static void Map(object src, object dest, Guid? key, bool auto = true, bool @default = true)
+        public static void Map(object src, object dest, Guid? key = null, bool auto = true, bool @default = true)
         {
             if (src == null || dest == null) return;
-
-            var strategy = SearchStrategy(key, auto, @default);
-            if (strategy != null) Map(src, dest, strategy);
+            var strategy = key.HasValue ?
+                StrategyContainer.Inst.Get(key.Value) :
+                (auto ? StrategyContainer.Inst.Get(src.GetType(), dest.GetType()) : null);
+            Map(src, dest, strategy != null ? strategy : (@default ? StrategyContainer.Inst.Get(K_MODE_ALL_CAREALL) : null));
         }
 
-        public static void Map(object src, object dest, IStrategy strategy = null)
+        public static void Map<T1, T2>(object src, object dest, bool @default = true)
         {
             if (src == null || dest == null) return;
-
-            IStrategy strtgy = (strategy as Strategy) != null ? strategy : new Strategy(MappingMode.All).CareAll();
-            (strtgy as Strategy).Mapping(src, dest);
+            var strategy = StrategyContainer.Inst.Get<T1, T2>();
+            Map(src, dest, strategy != null ? strategy : (@default ? StrategyContainer.Inst.Get(K_MODE_ALL_CAREALL) : null));
         }
 
-        private static Strategy SearchStrategy(Guid? key = null, bool auto = true, bool @default = true)
+        private static void Map(object src, object dest, IStrategy strategy)
         {
-            var strategy = key.HasValue && strategies.ContainsKey(key.Value) ? strategies[key.Value] as Strategy : null;
-            if(strategy == null && auto)
-            {
-                strategy = strategies.Values.FirstOrDefault(strtgy => (strtgy as Strategy) != null) as Strategy;
-            }
-            if (strategy == null && @default)
-            {
-                strategy = new Strategy(MappingMode.All);
-            }
-            return strategy;
+            var strtgy = (strategy as Strategy);
+            if (src == null || dest == null || strtgy == null) return;
+            strtgy.Mapping(src, dest);
         }
 
     }
